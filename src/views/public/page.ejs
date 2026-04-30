@@ -9,99 +9,288 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: <%= settings.background_color || '#F9FAFB' %>;
+      --bg: <%= settings.background_color || '#06060e' %>;
       --font: <%= settings.font_family || 'Inter, system-ui, sans-serif' %>;
       --gap: <%= settings.grid_gap || '16' %>px;
+      --surface: rgba(255,255,255,0.04);
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.15);
+      --text-primary: rgba(255,255,255,0.92);
+      --text-secondary: rgba(255,255,255,0.5);
+      --glow-spread: 80px;
     }
 
     body {
       font-family: var(--font);
       background: var(--bg);
+      color: var(--text-primary);
       min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Animated background */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.3;
+      will-change: transform;
+    }
+
+    .bg-gradient--1 {
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, #1a1a4e 0%, transparent 70%);
+      top: -10%;
+      right: -5%;
+      animation: drift1 25s ease-in-out infinite;
+    }
+    .bg-gradient--2 {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, #1e1e3a 0%, transparent 70%);
+      bottom: -15%;
+      left: -10%;
+      animation: drift2 30s ease-in-out infinite;
+    }
+    .bg-gradient--3 {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, #12122a 0%, transparent 70%);
+      top: 40%;
+      left: 50%;
+      animation: drift3 20s ease-in-out infinite;
+    }
+
+    @keyframes drift1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(-60px, 40px) scale(1.1); }
+      66% { transform: translate(30px, -20px) scale(0.95); }
+    }
+    @keyframes drift2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(50px, -30px) scale(1.05); }
+      66% { transform: translate(-40px, 50px) scale(0.9); }
+    }
+    @keyframes drift3 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-70px, -40px) scale(1.15); }
+    }
+
+    /* Fine grid overlay */
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridShift 40s linear infinite;
+    }
+    @keyframes gridShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Content */
+    .page-content {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
       padding: var(--gap);
     }
 
     header {
       text-align: center;
-      padding: 2rem 1rem 1rem;
+      padding: 4rem 1rem 2rem;
     }
     header h1 {
-      font-size: clamp(1.5rem, 4vw, 2.5rem);
-      color: #1f2937;
+      font-size: clamp(1.75rem, 5vw, 3rem);
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.6) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     header p {
-      color: #6b7280;
-      font-size: clamp(0.875rem, 2vw, 1.125rem);
-      margin-top: 0.5rem;
+      color: var(--text-secondary);
+      font-size: clamp(0.875rem, 2vw, 1.05rem);
+      margin-top: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 300;
     }
 
+    /* Tile grid */
     .tile-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: var(--gap);
       max-width: 1200px;
-      margin: 1.5rem auto;
+      margin: 1rem auto;
       padding: 0 var(--gap);
+      width: 100%;
     }
 
+    /* Tiles */
     .tile {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-decoration: none;
-      border-radius: 12px;
-      padding: 2rem 1.5rem;
-      min-height: 160px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      position: relative;
+      padding: 2.25rem 1.75rem;
+      min-height: 170px;
+      border-radius: 4px;
       overflow: hidden;
+      transition:
+        transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
     }
+
+    /* Glass border effect */
+    .tile::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      transition: border-color 0.4s ease;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* Diagonal accent line */
+    .tile::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(225deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.4s ease;
+    }
+
     .tile:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transform: translateY(-6px);
+      box-shadow:
+        0 20px 60px -15px rgba(0,0,0,0.5),
+        0 0 var(--glow-spread) -20px currentColor;
+    }
+    .tile:hover::before {
+      border-color: var(--border-hover);
+    }
+    .tile:hover::after {
+      opacity: 1.5;
     }
     .tile:active {
-      transform: translateY(-1px);
+      transform: translateY(-2px);
+      transition-duration: 0.1s;
     }
 
-    .tile--small { min-height: 120px; padding: 1.5rem 1rem; }
-    .tile--medium { grid-column: span 1; }
-    .tile--large { grid-column: 1 / -1; min-height: 180px; }
+    .tile--small {
+      min-height: 130px;
+      padding: 1.75rem 1.25rem;
+    }
+    .tile--medium {
+      grid-column: span 1;
+    }
+    .tile--large {
+      grid-column: 1 / -1;
+      min-height: 190px;
+    }
 
     .tile__icon {
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.875rem;
+      position: relative;
+      z-index: 1;
+      opacity: 0.9;
+      transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .tile:hover .tile__icon {
+      opacity: 1;
+      transform: scale(1.08);
     }
     .tile__icon svg {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
     }
 
     .tile__title {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 600;
       text-align: center;
+      letter-spacing: 0.04em;
+      position: relative;
+      z-index: 1;
+      transition: letter-spacing 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .tile--small .tile__title { font-size: 1rem; }
-    .tile--large .tile__title { font-size: 1.5rem; }
+    .tile:hover .tile__title {
+      letter-spacing: 0.07em;
+    }
+    .tile--small .tile__title { font-size: 0.95rem; }
+    .tile--large .tile__title { font-size: 1.35rem; }
 
     .tile__content {
       margin-top: 0.75rem;
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       text-align: center;
-      opacity: 0.9;
+      opacity: 0.7;
+      position: relative;
+      z-index: 1;
     }
 
+    /* Staggered entrance animation */
+    .tile {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: tileEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    <% tiles.forEach(function(tile, i) { %>
+    .tile:nth-child(<%= i + 1 %>) { animation-delay: <%= (i * 0.08).toFixed(2) %>s; }
+    <% }); %>
+
+    @keyframes tileEnter {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Footer */
+    .footer-spacer {
+      flex: 1;
+      min-height: 3rem;
+    }
+
+    /* Responsive */
     @media (max-width: 600px) {
       .tile-grid {
         grid-template-columns: 1fr;
       }
       .tile--large { grid-column: span 1; }
-      header { padding: 1.5rem 1rem 0.5rem; }
+      header { padding: 2.5rem 1rem 1.5rem; }
     }
-
     @media (min-width: 601px) and (max-width: 900px) {
       .tile-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -110,20 +299,32 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1><%= settings.site_title || 'My Site' %></h1>
-    <% if (settings.site_tagline) { %><p><%= settings.site_tagline %></p><% } %>
-  </header>
-  <main class="tile-grid">
-    <% tiles.forEach(function(tile) { %>
-    <a href="<%- tile.url %>" class="tile tile--<%= tile.size %>"
-       style="background-color: <%= tile.color %>; color: <%= tile.text_color %>"
-       <% if (tile.url.startsWith('http')) { %>target="_blank" rel="noopener noreferrer"<% } %>>
-      <% if (tile.icon_svg) { %><span class="tile__icon"><%- tile.icon_svg %></span><% } %>
-      <h2 class="tile__title"><%= tile.title %></h2>
-      <% if (tile.cached_content) { %><div class="tile__content"><%- tile.cached_content %></div><% } %>
-    </a>
-    <% }); %>
-  </main>
+  <div class="bg-canvas" aria-hidden="true">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient bg-gradient--1"></div>
+    <div class="bg-gradient bg-gradient--2"></div>
+    <div class="bg-gradient bg-gradient--3"></div>
+  </div>
+
+  <div class="page-content">
+    <header>
+      <h1><%= settings.site_title || 'My Site' %></h1>
+      <% if (settings.site_tagline) { %><p><%= settings.site_tagline %></p><% } %>
+    </header>
+
+    <main class="tile-grid">
+      <% tiles.forEach(function(tile) { %>
+      <a href="<%- tile.url %>" class="tile tile--<%= tile.size %>"
+         style="background: <%= tile.color %>15; color: <%= tile.text_color %>"
+         <% if (tile.url.startsWith('http')) { %>target="_blank" rel="noopener noreferrer"<% } %>>
+        <% if (tile.icon_svg) { %><span class="tile__icon"><%- tile.icon_svg %></span><% } %>
+        <h2 class="tile__title"><%= tile.title %></h2>
+        <% if (tile.cached_content) { %><div class="tile__content"><%- tile.cached_content %></div><% } %>
+      </a>
+      <% }); %>
+    </main>
+
+    <div class="footer-spacer"></div>
+  </div>
 </body>
 </html>

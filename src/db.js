@@ -56,7 +56,7 @@ if (settingsCount.count === 0) {
     ['site_title', 'Kofi Agyare'],
     ['site_tagline', ''],
     ['grid_gap', '16'],
-    ['background_color', '#F9FAFB'],
+    ['background_color', '#06060e'],
     ['font_family', 'Inter, system-ui, sans-serif'],
   ]);
 }
