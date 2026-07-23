@@ -1,5 +1,10 @@
 # kofiagyare.com
 
+> **Looking for the AV Ecosystem Map?** It has moved to
+> **[agyarek.github.io/av-ecosystem-map](https://agyarek.github.io/av-ecosystem-map/)**
+> ([source repo](https://github.com/agyarek/av-ecosystem-map)). The old URL
+> `agyarek.github.io/kofiagyare.com` now redirects there.
+
 A personal website that displays a single-page grid of large, colored tiles. Each tile represents a content category (LinkedIn, writing/blog, resume, side projects, etc.) and links to a destination. Content is managed through a built-in admin interface — no code editing required.
 
 ## Quick Start
