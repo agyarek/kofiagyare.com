@@ -1,5 +1,14 @@
 # AV Ecosystem Map migration runbook
 
+> **STATUS: COMPLETED 2026-07-23.** `agyarek/av-ecosystem-map` exists and
+> serves the map at https://agyarek.github.io/av-ecosystem-map/ via GitHub
+> Pages (deploy from branch: `main`, root — enabled manually by the owner; the
+> Actions-based enablement in step 3 turned out to be blocked for the workflow
+> token, so no deploy workflow is used). The old URL redirects: the flip in
+> step 4 was pushed to `claude/ecstatic-newton-intteb` as planned. The steps
+> below are kept for reference only. This folder can be deleted whenever this
+> branch is merged.
+
 Goal: move the AV ecosystem map from `https://agyarek.github.io/kofiagyare.com/`
 to `https://agyarek.github.io/av-ecosystem-map/`, leaving this repo to the
 personal-site CMS.
